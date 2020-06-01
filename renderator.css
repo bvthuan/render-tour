@@ -1980,3 +1980,7 @@ button#btnSend:disabled {
   right: 0px;
   z-index: 9999;
 }
+
+.cursor-pointer {
+  cursor: pointer !important;
+}

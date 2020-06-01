@@ -2085,6 +2085,8 @@ function panoSetting() {
           $("#play-animation >.btn-inner-stop").addClass("btn-inner-action");
         }, 2000);
       }
+
+      bindingDataForSnapToolbars()
     }
   );
 
@@ -2098,6 +2100,8 @@ function panoSetting() {
     ),
 
     function() {
+        bindingDataForSnapToolbars()
+
       $("#rederatorEditorContainer").append(
         '<div id="editorView"  class="fullWidthHeight"></div>'
       );
@@ -2632,6 +2636,8 @@ function cancelSnap(){
    var krpano = document.getElementById("krpanoSWFObject");
    krpano.call("showhotspots()");
 
+   setCursorChatMode();
+
   isSnapMode = false;
 }
 
@@ -2676,6 +2682,8 @@ async function showSnapModes() {
   // });
 
   isVideo = false;
+
+  $("#panoDIV").addClass("cursor-pointer");
 
   $("#header-Toolbar").hide();
 
@@ -2766,8 +2774,6 @@ async function showSnapModes() {
   //audioElement.play();
 
   resetEditorContainer();
-
-  chat();
 
 }
 
@@ -8446,95 +8452,57 @@ $(document).ready(() => {
         .css("height", "50px");
   }, 1000);
 
-  setTimeout(() => {
-    if (!isMobile) {
-      $("#start").bind("click", function() {
-        func_recording_start();
-      });
-
-      $("#chat").bind("click", function() {
-        chat();
-      });
-
-      $("#snap").bind("click", function() {
-        showSnapModes();
-      });
-
-      $("#screenShotButton").bind("click", function() {
-        takeScreenshot();
-      });
-
-    } else {
-      // let startTime, endTime, longpress;
-
-      // document.getElementById("snap").addEventListener('click', function () {
-
-      //   if(longpress){
-
-      //     console.log("long pressed!");
-
-      //     $('#start').trigger('click');
-
-      //   }else{
-
-      //     screenshot();
-
-      //   }
-
-      // });
-
-      //
-
-      // document.getElementById("snap").addEventListener('mousedown', function () {
-
-      //   startTime = new Date().getTime();
-
-      // });
-
-      //
-
-      // document.getElementById("snap").addEventListener('mouseup', function () {
-
-      //   endTime = new Date().getTime();
-
-      //   longpress = (endTime - startTime > 1200) ? true : false;
-
-      //
-
-      // });
-
-      $("#screenShotButton").bind("click", function() {
-        takeScreenshot();
-      });
-      
-      $("#snap").bind("click", function() {
-        if (!mobile_recording_process) showSnapModes();
-        else {
-          func_pause_play_recorder();
-        }
-      });
-
-      $("#snap").bind("long-press", function(e) {
-        e.preventDefault();
-
-        console.log("long button clicked");
-
-        mobile_recording_process = true;
-
-        func_recording_start();
-
-        $("#play-animation")
-          .removeClass("btn-action-stop")
-          .addClass("btn-action-play");
-      });
-
-      //   showToast('Double tap to leave a question',3900);
-    }
-
-    // chat();
-  }, 3000);
-
   if (!isMobile) {
     $("#brandLogo").addClass("hidden");
   }
 });
+
+
+function bindingDataForSnapToolbars() {
+  if (!isMobile) {
+    $("#start").bind("click", function () {
+      func_recording_start();
+    });
+
+    $("#chat").bind("click", function () {
+      chat();
+    });
+
+    $("#snap").bind("click", function () {
+      showSnapModes();
+    });
+
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+
+  } else {
+
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+
+    $("#snap").bind("click", function () {
+      if (!mobile_recording_process) showSnapModes();
+      else {
+        func_pause_play_recorder();
+      }
+    });
+
+    $("#snap").bind("long-press", function (e) {
+      e.preventDefault();
+
+      console.log("long button clicked");
+
+      mobile_recording_process = true;
+
+      func_recording_start();
+
+      $("#play-animation")
+        .removeClass("btn-action-stop")
+        .addClass("btn-action-play");
+    });
+
+  }
+
+}
