@@ -1,0 +1,49 @@
+<div id="overlay" class="container bg-overlay">
+	<div id="rederatorEditorContainer" class="overlay">
+
+		<div id="snapLandingView" class="fullWidthHeight">
+		<figure id="snapEffects">
+		<img id="snapData" />
+		</figure>
+		<img id="origionalSnapData" style="display:none;" />
+		<canvas id="effectFilters" style="display:none;" />
+		
+		
+		</div>
+		<img src="./renderator/images/trash.png" class="trash" onclick="closeEditor()" />
+		<div id="videoLandingView" class="fullWidthHeight">
+            <img id="videoData" />
+            <img class="play-circle" src="./renderator/images/play-circle.png" onclick='toRecord=false;playVideo("vid")'
+            />
+            <img class="pause-circle" src="./renderator/images/pause-circle.png" onclick='pauseVideo("vid")'
+            />
+            <div id="videoContainer"><figure id="videoEffectOverlay"></figure></div>
+            <canvas id="videoCloneCanvas" style="display:none;"></canvas>
+            <video id="cloneVideo"  style="display:none;"/>
+          <video id="OrigionalVideo"  style="display:none;"/>
+            <img src="./renderator/images/trash.png" class="trash" onclick="closeEditor()" />
+        </div>
+		<div id="screenshotView" class="screenshot-footer">
+			<!--<a id="apiFilter" onclick="return launchEditor('snapData', 
+    $('#snapData').attr('src'));">Test</a>-->
+			<img id="color-effects" src="./renderator/images/color-effects.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			 onclick="return colorEffects();">
+			<img id="mail-image" src="./renderator/images/mail.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			 onclick='shareTo="Email";applySelectedFilter("share");'>
+			<img id="editTextImage" src="./renderator/images/edit-text.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			 onclick="addText()">
+			<img id="recordAudioImage" src="./renderator/images/record-audio.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			 onclick="recordAudio()">
+			<img id="shareImage" src="./renderator/images/share.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			 onclick="share()">
+			<a target="_blank" id="captured"><img id="downloadImage" src="./renderator/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
+						 onclick="downloadFinalSnap()"></a>
+			<a target="_blank" style="display:none;" id="capturedVideo" href="" download="video.mp4">
+				<img id="downloadImage" src="./renderator/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
+						 onclick="downloadFinalSnap()">
+			</a>
+						   
+
+		</div>
+	</div>
+</div>
