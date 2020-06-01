@@ -2,48 +2,84 @@
 	<div id="rederatorEditorContainer" class="overlay">
 
 		<div id="snapLandingView" class="fullWidthHeight">
-		<figure id="snapEffects">
-		<img id="snapData" />
-		</figure>
-		<img id="origionalSnapData" style="display:none;" />
-		<canvas id="effectFilters" style="display:none;" />
-		
-		
+			<figure id="snapEffects">
+				<img id="snapData" />
+			</figure>
+			<img id="origionalSnapData" style="display:none;" />
+			<canvas id="effectFilters" style="display:none;" />
+			<div class="plus-icon-group">
+				<div class="plus-icon plus-top-left"><div class="secondary-plus"></div></div>
+				<div class="plus-icon plus-top-right "><div class="secondary-plus"></div></div>
+				<div class="plus-icon plus-bottom-left "><div class="secondary-plus"></div></div>
+				<div class="plus-icon plus-bottom-right "><div class="secondary-plus"></div></div>
+				<div class="plus-icon plus-center">
+					<div><div class="primary-plus"></div></div>
+				</div>
+			</div>
+			<div class="snap-container">
+				<div id="screenShotButton"
+					style="width: 70px;height: 70px;background-size: cover;cursor: pointer;position: relative;display: block;-webkit-transform: none;-moz-transform: none;-ms-transform: none;-o-transform: none;transform: none;margin: unset;"
+					class=" horizontal-footer-image h80px" alt="Snap" onmouseenter="disableChatPointer()"
+					onmouseleave="enableChatPointer()">
+					<div style="position: absolute; width: 100%; height: 100%; z-index: 100;"></div>
+					<img src="./renderatorUI/images/snap.png" width="100%" , height="100%" style="margin: 0;" />
+				</div>
+			</div>
 		</div>
-		<img src="./renderator/images/trash.png" class="trash" onclick="closeEditor()" />
+
+		<img src="./renderatorUI/images/trash.png" class="snap-trash-icon" onclick="closeEditor()" />
+
 		<div id="videoLandingView" class="fullWidthHeight">
             <img id="videoData" />
-            <img class="play-circle" src="./renderator/images/play-circle.png" onclick='toRecord=false;playVideo("vid")'
+            <img class="play-circle" src="./renderatorUI/images/play-circle.png" onclick='toRecord=false;playVideo("vid")'
             />
-            <img class="pause-circle" src="./renderator/images/pause-circle.png" onclick='pauseVideo("vid")'
+            <img class="pause-circle" src="./renderatorUI/images/pause-circle.png" onclick='pauseVideo("vid")'
             />
             <div id="videoContainer"><figure id="videoEffectOverlay"></figure></div>
             <canvas id="videoCloneCanvas" style="display:none;"></canvas>
             <video id="cloneVideo"  style="display:none;"/>
           <video id="OrigionalVideo"  style="display:none;"/>
-            <img src="./renderator/images/trash.png" class="trash" onclick="closeEditor()" />
-        </div>
+            <img src="./renderatorUI/images/trash.png" class="trash" onclick="closeEditor()" />
+		</div>
+
 		<div id="screenshotView" class="screenshot-footer">
 			<!--<a id="apiFilter" onclick="return launchEditor('snapData', 
     $('#snapData').attr('src'));">Test</a>-->
-			<img id="color-effects" src="./renderator/images/color-effects.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<img id="color-effects" src="./renderatorUI/images/color-effects.png" class="screenshot-footer-image screenshot-footer-image-padding"
 			 onclick="return colorEffects();">
-			<img id="mail-image" src="./renderator/images/mail.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<img id="mail-image" src="./renderatorUI/images/mail.png" class="screenshot-footer-image screenshot-footer-image-padding"
 			 onclick='shareTo="Email";applySelectedFilter("share");'>
-			<img id="editTextImage" src="./renderator/images/edit-text.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<img id="editTextImage" src="./renderatorUI/images/edit-text.png" class="screenshot-footer-image screenshot-footer-image-padding"
 			 onclick="addText()">
-			<img id="recordAudioImage" src="./renderator/images/record-audio.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<img id="recordAudioImage" src="./renderatorUI/images/record-audio.png" class="screenshot-footer-image screenshot-footer-image-padding"
 			 onclick="recordAudio()">
-			<img id="shareImage" src="./renderator/images/share.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<img id="shareImage" src="./renderatorUI/images/share.png" class="screenshot-footer-image screenshot-footer-image-padding"
 			 onclick="share()">
-			<a target="_blank" id="captured"><img id="downloadImage" src="./renderator/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
+			<a target="_blank" id="captured"><img id="downloadImage" src="./renderatorUI/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
 						 onclick="downloadFinalSnap()"></a>
 			<a target="_blank" style="display:none;" id="capturedVideo" href="" download="video.mp4">
-				<img id="downloadImage" src="./renderator/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
+				<img id="downloadImage" src="./renderatorUI/images/download.png" class="screenshot-footer-image screenshot-footer-image-padding"
 						 onclick="downloadFinalSnap()">
 			</a>
 						   
 
+		</div>
+	</div>
+	<div id="snapSettings" class="d-flex flex-column">
+		<div class="snapMode" onclick="cancelSnap()">
+			<div class="secondary-plus cancel"></div>
+		</div>
+		<div class="snapMode " onclick="changeSnapMode('FULL_SCREEN')">
+			<div id="FULL_SCREEN" class="full-screen box">Full</div>
+		</div>
+		<div class="snapMode " onclick="changeSnapMode('PORTRAIT')">
+			<div id="PORTRAIT" class="portrait box">1:2</div>
+		</div>
+		<div class="snapMode square" onclick="changeSnapMode('SQUARE')">
+			<div id="SQUARE" class="square box">1:1</div>
+		</div>
+		<div class="snapMode landscape" onclick="changeSnapMode('LANDSCAPE')">
+			<div id="LANDSCAPE" class="landscape box">2:1</div>
 		</div>
 	</div>
 </div>
