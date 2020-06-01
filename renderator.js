@@ -678,9 +678,12 @@ $(document).ready(function() {
         });
       };
 
-      document.getElementById("stop").onclick = function() {
-        func_stop_recording();
-      };
+      setTimeout(function(){
+          document.getElementById("stop").onclick = function() {
+              func_stop_recording();
+          };
+      },1000)
+
 
       func_pause_play_recorder = function pause_play_recorder() {
         isToolBarClick = true;
@@ -2622,6 +2625,8 @@ async function takeScreenshot() {
   $(".snap-trash-icon").show();
   $("#snapEffects").show();
 
+  $("#overlay").removeClass("no-pointer-events");
+
   audioElement.play();
 }
 
@@ -2642,6 +2647,8 @@ function cancelSnap(){
     if (previousAutoRotated) {
         restoreAutoRotate();
     }
+
+  $("#overlay").removeClass("no-pointer-events")
 
   isSnapMode = false;
 }
@@ -2782,6 +2789,8 @@ async function showSnapModes() {
     previousAutoRotated = isAutoRotated();
 
     panoToolEvent("pauseautorotation");
+
+    $("#overlay").addClass("no-pointer-events")
 
     $("#panoDIV").addClass("cursor-pointer");
 }
@@ -2961,9 +2970,13 @@ function closeEditor() {
   var krpano = document.getElementById("krpanoSWFObject");
   krpano.call("showhotspots()");
 
-    if (previousAutoRotated) {
-        restoreAutoRotate();
-    }
+  if (previousAutoRotated) {
+      console.log("restore")
+      restoreAutoRotate();
+  }
+
+  $("#overlay").removeClass("no-pointer-events");
+
 }
 
 function restoreAutoRotate(){

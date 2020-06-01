@@ -1801,6 +1801,7 @@ button#btnSend:disabled {
   height: 100%;
   width: 150px;
   position: absolute;
+  pointer-events: auto !important;
   right: 0px;
   padding-right: 10px;
   padding-left: 50px;
@@ -1983,4 +1984,12 @@ button#btnSend:disabled {
 
 .cursor-pointer {
   cursor: pointer !important;
+}
+
+.no-pointer-events{
+  pointer-events: none
+}
+
+#screenShotButton{
+  pointer-events: auto !important;
 }
