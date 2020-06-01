@@ -42,6 +42,7 @@ var img,
   music,
   conversations = [],
   isChatOn = false,
+    previousAutoRotated = true,
   isChatWindowVisible = false,
   isToolBarClick = false,
   isLoggedIn = false,
@@ -2100,7 +2101,7 @@ function panoSetting() {
     ),
 
     function() {
-        bindingDataForSnapToolbars()
+      bindDataForTakeSnapShotButton()
 
       $("#rederatorEditorContainer").append(
         '<div id="editorView"  class="fullWidthHeight"></div>'
@@ -2638,6 +2639,10 @@ function cancelSnap(){
 
    setCursorChatMode();
 
+    if (previousAutoRotated) {
+        restoreAutoRotate();
+    }
+
   isSnapMode = false;
 }
 
@@ -2683,7 +2688,6 @@ async function showSnapModes() {
 
   isVideo = false;
 
-  $("#panoDIV").addClass("cursor-pointer");
 
   $("#header-Toolbar").hide();
 
@@ -2773,8 +2777,13 @@ async function showSnapModes() {
 
   //audioElement.play();
 
-  resetEditorContainer();
+    resetEditorContainer();
 
+    previousAutoRotated = isAutoRotated();
+
+    panoToolEvent("pauseautorotation");
+
+    $("#panoDIV").addClass("cursor-pointer");
 }
 
 function chat() {
@@ -2951,6 +2960,19 @@ function closeEditor() {
 
   var krpano = document.getElementById("krpanoSWFObject");
   krpano.call("showhotspots()");
+
+    if (previousAutoRotated) {
+        restoreAutoRotate();
+    }
+}
+
+function restoreAutoRotate(){
+    panoToolEvent("resumeautorotation");
+}
+
+function isAutoRotated(){
+    var source = $("#auto-rotate").attr("src");
+    return source.includes("rotationpaused");
 }
 
 function colorEffects() {
@@ -8504,5 +8526,17 @@ function bindingDataForSnapToolbars() {
     });
 
   }
+}
 
+
+function bindDataForTakeSnapShotButton() {
+  if (!isMobile) {
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+  } else {
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+  }
 }
