@@ -2564,7 +2564,14 @@ function changeSnapMode(mode) {
 
 }
 
-
+function isSafari() {
+  var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+    navigator.userAgent &&
+    navigator.userAgent.indexOf('CriOS') == -1 &&
+    navigator.userAgent.indexOf('FxiOS') == -1;
+  var mac =  navigator.platform.indexOf('Mac') >= 0;
+  return isSafari || mac;
+}
 
 function createCanvasForSnapshot(MainCanvas){
     var app = document.body
@@ -2578,7 +2585,8 @@ function createCanvasForSnapshot(MainCanvas){
     app.appendChild(hidden_canv);
 
     var rederatorEditorContainer =  $("#rederatorEditorContainer");
-    var scale = isMobile? 2: 1;
+    var safariBrowser = isSafari();
+    var scale = isMobile? (safariBrowser? 3: 2) :(safariBrowser?2:1);
 
     hidden_canv.width = rederatorEditorContainer.width() * scale;
     hidden_canv.height = rederatorEditorContainer.height() * scale;
