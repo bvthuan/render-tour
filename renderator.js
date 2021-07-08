@@ -42,6 +42,7 @@ var img,
   music,
   conversations = [],
   isChatOn = false,
+    previousAutoRotated = true,
   isChatWindowVisible = false,
   isToolBarClick = false,
   isLoggedIn = false,
@@ -83,6 +84,10 @@ var footerWidth;
 var footerHeight;
 
 var isMobile = false;
+
+var isSnapMode = false;
+
+var currentSnapMode = "";
 
 var audioRecWidth, audioRecHeight; //initiate as false
 
@@ -233,7 +238,7 @@ function waitForFunction(callback,waittime=250){
 $(document).ready(function() {
   $("head").append(
     '<meta name="viewport" content="width=device-width, initial-scale=1"> ' +
-      '<script src="renderator/js/long-press-event.js"></script>'
+      '<script src="renderatorUI/js/long-press-event.js"></script>'
   );
 
   /* For double tap event*/
@@ -307,7 +312,7 @@ $(document).ready(function() {
   )
     isMobile = true;
 
-  $.getJSON("renderator/config/renderatorConfig.json")
+  $.getJSON("renderatorUI/config/renderatorConfig.json")
 
     .done(function(json) {
       basepath = json.config.basepath;
@@ -423,9 +428,9 @@ $(document).ready(function() {
       if (typeof multipleviews === "undefined" || multipleviews === null) {
         requiredDiv.style.display = "none";
       } else {
-        loadjscssfile("renderator/css/multiplescenes.css?version=3", "css");
+        loadjscssfile("renderatorUI/css/multiplescenes.css?version=3", "css");
 
-        loadjscssfile("renderator/js/multiplescenes.js?version=2", "js");
+        loadjscssfile("renderatorUI/js/multiplescenes.js?version=2", "js");
 
         loadjscssfile(
           "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.css",
@@ -673,9 +678,12 @@ $(document).ready(function() {
         });
       };
 
-      document.getElementById("stop").onclick = function() {
-        func_stop_recording();
-      };
+      setTimeout(function(){
+          document.getElementById("stop").onclick = function() {
+              func_stop_recording();
+          };
+      },1000)
+
 
       func_pause_play_recorder = function pause_play_recorder() {
         isToolBarClick = true;
@@ -772,7 +780,7 @@ function onSceneChange() {
 
   closeChat();
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     conversations = [];
 
     if (isLoggedIn) {
@@ -818,7 +826,7 @@ function checkLoginStatus() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.currentUserUrl;
 
     $("#mainLoader").css("display", "none");
@@ -904,7 +912,7 @@ function onLoginFail() {
 }
 
 function getCurrentTour() {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.currentTourUrl;
 
     var data = {
@@ -982,6 +990,7 @@ startConversationBox = function() {
     isChatOn,
     isFormMode,
     enableChat,
+    isSnapMode,
     isAdmin,
     interactionEnabled,
     tourAdmin,
@@ -993,6 +1002,7 @@ startConversationBox = function() {
   if (
     !isChatOn ||
     isFormMode ||
+    isSnapMode || 
     !enableChat ||
     (!interactionEnabled &&
       !isAdmin &&
@@ -1300,7 +1310,7 @@ function initUI() {
     $("head").append(document.getElementById("christos_css"));
   } else {
     $("head").append(
-      '<link rel="stylesheet" id="christos_css" type="text/css" href="renderator/css/christos_css.css">'
+      '<link rel="stylesheet" id="christos_css" type="text/css" href="renderatorUI/css/christos_css.css">'
     );
 
     $("head").append(
@@ -1331,6 +1341,19 @@ function initUI() {
   //   (window.innerWidth - footerToolContainerWidth) / 2 + "px"
 
   // );
+  if (isMobile) {
+
+  } else {
+    if (windowWidth < windowHeight) {
+      disableLandscapeAndPortrailModes();
+      if (currentSnapMode === "LANDSCAPE" || currentSnapMode === "PORTRAIT" || currentSnapMode === "") {
+       currentSnapMode = "FULL_SCREEN";
+      }
+    } else {
+      enableLandscapeAndPortrailModes();
+    }
+    changeSnapMode(currentSnapMode);
+  }
 
   $("#rederatorEditorContainer").css(
     "width",
@@ -1548,6 +1571,10 @@ function initUI() {
 
   $(".headerTool").css("display", "block");
 
+  if (isSnapMode) {
+    $("#header-Toolbar").hide();
+  }
+
   resetEditorContainer();
 
   if (contactForm) {
@@ -1627,11 +1654,17 @@ function resetEditorContainer() {
 
   var snapDataHeight = $("#rederatorEditorContainer").height();
 
-  $("#snapLandingView").css("height", snapDataHeight - (toolBarHeight + 10));
+  // $("#snapLandingView").css("height", snapDataHeight - (toolBarHeight + 10));
 
-  $("#videoLandingView").css("height", snapDataHeight - (toolBarHeight + 10));
+  // $("#videoLandingView").css("height", snapDataHeight - (toolBarHeight + 10));
 
-  $("#videoContainer").css("height", snapDataHeight - (toolBarHeight + 10));
+  // $("#videoContainer").css("height", snapDataHeight - (toolBarHeight + 10));
+
+  $("#snapLandingView").css("height", snapDataHeight);
+
+  $("#videoLandingView").css("height", snapDataHeight);
+
+  $("#videoContainer").css("height", snapDataHeight);
 }
 
 function playVideo(player) {
@@ -2045,7 +2078,7 @@ function panoSetting() {
         );
 
         $("#footerToolContainer").append(
-          ' <img id="stop" src="./renderator/images/check-stop.png" style="position: absolute;\n' +
+          ' <img id="stop" src="./renderatorUI/images/check-stop.png" style="position: absolute;\n' +
             "     right: 0%;\n" +
             "     bottom: 50%;\n" +
             "     width: 30px;\n" +
@@ -2056,6 +2089,8 @@ function panoSetting() {
           $("#play-animation >.btn-inner-stop").addClass("btn-inner-action");
         }, 2000);
       }
+
+      bindingDataForSnapToolbars()
     }
   );
 
@@ -2069,6 +2104,8 @@ function panoSetting() {
     ),
 
     function() {
+      bindDataForTakeSnapShotButton()
+
       $("#rederatorEditorContainer").append(
         '<div id="editorView"  class="fullWidthHeight"></div>'
       );
@@ -2439,7 +2476,206 @@ function screenRecord() {
   }, 1000);
 }
 
-async function screenshot() {
+function changeSnapMode(mode) {
+
+  var snapElement = $("#" + mode);
+
+  if (!snapElement || snapElement.hasClass("inactive")) {
+    return;
+  }
+
+  $("#snapSettings .box").removeClass("active");
+  snapElement.addClass("active");
+
+
+  currentSnapMode = mode;
+
+  switch (mode) {
+    case "FULL_SCREEN":
+      renderatorEditorContainerWidth = windowWidth;
+      renderatorEditorContainerHeight = windowHeight ;
+      break;
+
+    case "PORTRAIT":
+      renderatorEditorContainerHeight = (windowHeight * 80) / 100;
+      renderatorEditorContainerWidth =  (renderatorEditorContainerHeight / 2);
+      break;
+
+    case "SQUARE":
+      if (windowWidth < windowHeight) {
+        renderatorEditorContainerWidth = windowWidth;
+        renderatorEditorContainerHeight = windowWidth;
+      } else {
+        renderatorEditorContainerWidth = (windowHeight * 80) / 100;
+        renderatorEditorContainerHeight = (windowHeight * 80) / 100;
+      }
+
+      break;
+
+    case "LANDSCAPE":
+      renderatorEditorContainerHeight = (windowHeight * 80) / 100;
+      renderatorEditorContainerWidth = 2 * renderatorEditorContainerHeight;
+      var padding = (windowWidth - renderatorEditorContainerWidth) / 2
+      if (padding < 100) {
+        if (windowWidth * 0.2 < 100) {
+          renderatorEditorContainerWidth = (windowWidth * 80) / 100;
+          renderatorEditorContainerHeight = renderatorEditorContainerWidth / 2
+        } else {
+          renderatorEditorContainerWidth =  windowWidth - ((100 + 10) *2)
+          renderatorEditorContainerHeight = renderatorEditorContainerWidth / 2
+        }
+       }
+
+      break;
+
+    default:
+      return;
+  }
+
+  $("#rederatorEditorContainer").css("width", renderatorEditorContainerWidth + "px");
+
+  $("#rederatorEditorContainer").css("height", renderatorEditorContainerHeight + "px");
+
+  if (mode == "FULL_SCREEN" ) {
+    $("#rederatorEditorContainer").css("top", " 0px");
+    $("#rederatorEditorContainer").css("left", "0px");
+
+    $("#rederatorEditorContainer").addClass("no-border");
+
+  } else {
+    $("#rederatorEditorContainer").css("top", (windowHeight - renderatorEditorContainerHeight) / 2 + "px");
+    $("#rederatorEditorContainer").css("left", (windowWidth - renderatorEditorContainerWidth) / 2 + "px");
+    $("#rederatorEditorContainer").removeClass("no-border");
+  }
+
+
+  if (isMobile || mode == "FULL_SCREEN") {
+    if (isMobile) {
+      $("#snapSettings").addClass("mobile-darker-background");
+    } else {
+      $("#snapSettings").addClass("desktop-darker-background");
+    }
+  } else {
+    $("#snapSettings").removeClass("mobile-darker-background");
+    $("#snapSettings").removeClass("desktop-darker-background");
+  }
+
+  resetEditorContainer();
+
+}
+
+function isSafari() {
+  var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+    navigator.userAgent &&
+    navigator.userAgent.indexOf('CriOS') == -1 &&
+    navigator.userAgent.indexOf('FxiOS') == -1;
+  var mac =  navigator.platform.indexOf('Mac') >= 0;
+  return isSafari || mac;
+}
+
+function createCanvasForSnapshot(MainCanvas){
+    var app = document.body
+  
+    $("#hidenCanvasForSnapshot").remove();
+
+    var hidden_canv = document.createElement('canvas');
+    hidden_canv.setAttribute("id", "hidenCanvasForSnapshot");
+    hidden_canv.style.display = 'none';
+
+    app.appendChild(hidden_canv);
+
+    var rederatorEditorContainer =  $("#rederatorEditorContainer");
+    var safariBrowser = isSafari();
+    var scale = isMobile? (safariBrowser? 3: 2) :(safariBrowser?2:1);
+
+    hidden_canv.width = rederatorEditorContainer.width() * scale;
+    hidden_canv.height = rederatorEditorContainer.height() * scale;
+
+    var offset = rederatorEditorContainer.offset()
+
+
+    //Draw the data you want to download to the hidden canvas
+    var hidden_ctx = hidden_canv.getContext('2d');
+    hidden_ctx.drawImage(
+        MainCanvas,
+        offset.left * scale,//Start Clipping
+        offset.top * scale,//Start Clipping
+        hidden_canv.width,//Clipping Width
+        hidden_canv.height,//Clipping Height
+        0,//Place X
+        0,//Place Y
+        hidden_canv.width,//Place Width
+        hidden_canv.height//Place Height
+    );
+
+
+    return hidden_canv;
+}
+
+async function takeScreenshot() {
+   $("body")
+      .fadeToggle("fast")
+      .fadeToggle("slow");
+
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      krpano.call("makescreenshot()");
+      krpano.call("showhotspots()");
+    });
+  });
+
+  $("#screenshotView").css("display", "block");
+  $("#snapSettings").css("display", "none");
+  $(".plus-icon-group").css("display", "none");
+  $(".snap-container").css("display", "none");
+
+  $("#snapToolBar").show();
+  $(".snap-trash-icon").show();
+  $("#snapEffects").show();
+
+  $("#overlay").removeClass("no-pointer-events");
+
+  audioElement.play();
+}
+
+function cancelSnap(){
+
+  $("#overlay").hide();
+
+   $("#snapSettings").hide();
+   $("#snapToolBar").show();
+   $(".tooltiptext").show();
+   $("#header-Toolbar").show();
+
+   var krpano = document.getElementById("krpanoSWFObject");
+   krpano.call("showhotspots()");
+
+   setCursorChatMode();
+
+    if (previousAutoRotated) {
+        restoreAutoRotate();
+    }
+
+  $("#overlay").removeClass("no-pointer-events")
+
+  isSnapMode = false;
+}
+
+function disableLandscapeAndPortrailModes(){
+    $("#snapSettings .landscape").addClass("inactive");
+    $("#snapSettings .portrait").addClass("inactive");
+}
+
+function enableLandscapeAndPortrailModes(){
+  $("#snapSettings .landscape").removeClass("inactive");
+  $("#snapSettings .portrait").removeClass("inactive");
+}
+
+async function showSnapModes() {
+  var isDeskTop = !isMobile;
+
+  isSnapMode = true;
+
   $("#color-effects").removeClass("disabled");
 
   isToolBarClick = true;
@@ -2450,22 +2686,25 @@ async function screenshot() {
     $("#toolGear").trigger("click");
   }
 
-  $("body")
-    .fadeToggle("fast")
+  // $("body")
+  //   .fadeToggle("fast")
 
-    .fadeToggle("slow");
+  //   .fadeToggle("slow");
 
   var krpano = document.getElementById("krpanoSWFObject");
 
   krpano.call("hidehotspots()");
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      krpano.call("makescreenshot()");
-      krpano.call("showhotspots()");
-    });
-  });
+  // requestAnimationFrame(function() {
+  //   requestAnimationFrame(function() {
+  //     krpano.call("makescreenshot()");
+  //     krpano.call("showhotspots()");
+  //   });
+  // });
 
   isVideo = false;
+
+
+  $("#header-Toolbar").hide();
 
   $("#overlay").css("display", "block");
 
@@ -2473,7 +2712,51 @@ async function screenshot() {
 
   $(".overlay").css("display", "block");
 
-  $("#screenshotView").css("display", "block");
+  $("#screenshotView").css("display", "none");
+
+  $("#snapSettings").css("display", "flex");
+
+  if (isDeskTop) {
+    $(".plus-icon-group").show();
+
+    if ($("#snapSettings .active").length === 0) {
+
+      $("#snapSettings .landscape").addClass("active");
+
+      if (windowWidth < windowHeight) {
+        disableLandscapeAndPortrailModes();
+        changeSnapMode("FULL_SCREEN")
+      } else {
+        enableLandscapeAndPortrailModes();
+        changeSnapMode('LANDSCAPE')
+      }
+      changeSnapMode('LANDSCAPE')
+    }
+
+  } else {
+
+    $(".plus-icon-group").hide();
+
+    if ($("#snapSettings .active").length === 0) {
+
+      $("#snapSettings .full-screen").addClass("active");
+
+      changeSnapMode('FULL_SCREEN')
+    }
+
+    // $("#snapSettings .landscape").addClass("inactive");
+    // $("#snapSettings .portrait").addClass("inactive");
+
+    $("#snapSettings .landscape").hide();
+    $("#snapSettings .portrait").hide();
+  }
+
+  $(".snap-container").css("display", "flex");
+  $(".snap-trash-icon").hide();
+  $("#snapEffects").hide();
+  $(".tooltiptext").hide();
+  $("#editorView").hide();
+
 
   $("#innerOverlay").css("display", "none");
 
@@ -2495,6 +2778,8 @@ async function screenshot() {
     $("#captured").show();
 
     $("#capturedVideo").hide();
+
+    $("#snapToolBar").hide();
   } else {
     $("#captured").hide();
 
@@ -2505,12 +2790,17 @@ async function screenshot() {
     $("#snapLandingView").hide();
   }
 
-  audioElement.play();
+  //audioElement.play();
 
-  resetEditorContainer();
+    resetEditorContainer();
 
-  chat();
+    previousAutoRotated = isAutoRotated();
 
+    panoToolEvent("pauseautorotation");
+
+    $("#overlay").addClass("no-pointer-events")
+
+    $("#panoDIV").addClass("cursor-pointer");
 }
 
 function chat() {
@@ -2549,7 +2839,7 @@ function chat() {
 
       enableChat = true;
 
-      $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+      $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
         scene = krpano.get("xml.scene");
 
         conversations = [];
@@ -2642,9 +2932,11 @@ function setCursorDragMode() {
   }, 1000);
 }
 
-function takeScreenshot() {}
+
 
 function closeEditor() {
+  isSnapMode = false;
+
   isToolBarClick = true;
 
   isEffectPreview = false;
@@ -2652,6 +2944,8 @@ function closeEditor() {
   thumbnailUpdated = false;
 
   shareTo = "";
+
+  $("#header-Toolbar").show();
 
   $("#overlay").css("display", "none");
 
@@ -2671,11 +2965,35 @@ function closeEditor() {
 
   $("#snapEffects").removeClass("mayfair nashville clarendon");
 
+  $(".tooltiptext").show();
+
   clearVideoData();
 
   enableChat = true;
 
+  $("#snapToolBar").show();
+
   if (isChatOn) setCursorChatMode();
+
+  var krpano = document.getElementById("krpanoSWFObject");
+  krpano.call("showhotspots()");
+
+  if (previousAutoRotated) {
+      console.log("restore")
+      restoreAutoRotate();
+  }
+
+  $("#overlay").removeClass("no-pointer-events");
+
+}
+
+function restoreAutoRotate(){
+    panoToolEvent("resumeautorotation");
+}
+
+function isAutoRotated(){
+    var source = $("#auto-rotate").attr("src");
+    return source.includes("rotationpaused");
 }
 
 function colorEffects() {
@@ -2694,9 +3012,11 @@ function colorEffects() {
 
     $("#warmEffect").attr("src", $("#origionalSnapData").attr("src"));
 
-    var previewEffectWidth = renderatorEditorContainerWidth / 2;
+    var rederatorEditorContainerBorderWidth = (currentSnapMode === "FULL_SCREEN")? 0: 10;
 
-    var previewEffectheigh = renderatorEditorContainerHeight / 2;
+    var previewEffectWidth = (renderatorEditorContainerWidth - rederatorEditorContainerBorderWidth ) / 2;
+
+    var previewEffectheigh = (renderatorEditorContainerHeight - rederatorEditorContainerBorderWidth) / 2 ;
 
     $(".previewEffects").css("width", previewEffectWidth + "px");
 
@@ -4567,7 +4887,7 @@ shareContent = function() {
           "http://pinterest.com/pin/create/button/?url=" +
           videoLocation +
           "&media=" +
-          "http://tour.renderator.com/renderator/images/clientLogo.png" +
+          "http://tour.renderator.com/renderatorUI/images/clientLogo.png" +
           "&description=Renderator Virtual Tour";
       }
 
@@ -5136,7 +5456,7 @@ function startConversation() {
 
   /*
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function (json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function (json) {
 
     var url = json.config.apiUrl + json.config.addConversationUrl;
 
@@ -5443,7 +5763,7 @@ function sendMessageFinal() {
 
   let useremail = $("#useremail").val();
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.addConversationUrl;
 
     var data = {
@@ -5858,7 +6178,7 @@ function signUp() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.registerUrl;
 
     var data = {
@@ -5932,7 +6252,7 @@ function login() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.loginUrl;
 
     var data = {
@@ -6032,7 +6352,7 @@ function logout() {
 
     buttons: {
       yes: function() {
-        $.getJSON("renderator/config/renderatorConfig.json").done(function(
+        $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(
           json
         ) {
           var url = json.config.apiUrl + json.config.logoutUrl;
@@ -6153,7 +6473,7 @@ function showAdminPanel() {
 
       setFormPosition();
 
-      $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+      $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
         var url = json.config.apiUrl + json.config.toursUrl;
 
         makeGetCallWithHeader(url, onGetTourList, defaultCallback);
@@ -6257,7 +6577,7 @@ function openTab(evt, tab) {
 }
 
 function getTabContent(tab) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     if (tab == "tabTours") {
       var url = json.config.apiUrl + json.config.toursUrl;
 
@@ -6354,7 +6674,7 @@ function onGetUserList(response) {
 }
 
 function getUser(id) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.usersUrl + "/" + id;
 
     makeGetCallWithHeader(url, onGetUser, defaultCallback);
@@ -6434,7 +6754,7 @@ function editUser() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.updateUserUrl;
 
     var data = {
@@ -6495,7 +6815,7 @@ function deleteUser(id) {
 
     buttons: {
       yes: function() {
-        $.getJSON("renderator/config/renderatorConfig.json").done(function(
+        $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(
           json
         ) {
           var url = json.config.apiUrl + json.config.deleteUserUrl;
@@ -6542,7 +6862,7 @@ function alertCallBack() {
 }
 
 function openTourDialog() {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.usersUrl;
 
     makeGetCallWithHeader(url, onOpenTourDialog, defaultCallback);
@@ -6629,7 +6949,7 @@ function addTour() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.addTourUrl;
 
     var data = {
@@ -6697,7 +7017,7 @@ function onTourAdded(response) {
 }
 
 function getTour(id) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.toursUrl + "/" + id;
 
     makeGetCallWithHeader(url, onGetTour, defaultCallback);
@@ -6801,7 +7121,7 @@ function editTour() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.updateTourUrl;
 
     var data = {
@@ -6839,7 +7159,7 @@ function deleteTour(id) {
 
     buttons: {
       yes: function() {
-        $.getJSON("renderator/config/renderatorConfig.json").done(function(
+        $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(
           json
         ) {
           var url = json.config.apiUrl + json.config.deleteTourUrl;
@@ -7032,7 +7352,7 @@ function GetConversationLog(id) {
 
   mousey = krpano.get("mouse.y");
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     if (isLoggedIn) {
       var url =
         json.config.apiUrl + json.config.getConversationLogUrl + "/" + id;
@@ -7406,7 +7726,7 @@ function joinConversation() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.joinConversationUrl;
 
     var data = {
@@ -7519,7 +7839,7 @@ function updateDisplayName() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.updateConversationNameUrl;
 
     var data = {
@@ -7575,7 +7895,7 @@ function sendMessage() {
 
   if (text == "") return;
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.sendMessageUrl;
 
     var data = {
@@ -7635,7 +7955,7 @@ function saveUpdatedMessage() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.editMessageUrl;
 
     var data = {
@@ -7714,7 +8034,7 @@ function updateProfile() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.editProfileUrl;
 
     var data = {
@@ -7803,7 +8123,7 @@ function savePassword() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.changePasswordUrl;
 
     var data = {
@@ -7851,7 +8171,7 @@ function forgotPassword() {
     return;
   }
 
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.forgotPasswordUrl + "/" + email;
 
     makeGetCall(url, onForgotPassword, failCallback);
@@ -7921,7 +8241,7 @@ function openConversationApproveDialog(id) {
 }
 
 function processConversation(id, isApproved) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.processConversationUrl;
 
     var data = {
@@ -7997,7 +8317,7 @@ function openNoteApproveDialog(id) {
 }
 
 function processNote(id, isApproved) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.processMessageUrl;
 
     var data = {
@@ -8027,7 +8347,7 @@ function onNoteProcessed(response) {
 }
 
 function getUpdatedNote(id) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.getUpdatedNoteUrl + "/" + id;
 
     $("#mainLoader").css("display", "none");
@@ -8093,7 +8413,7 @@ function onGetUpdatedNote(response) {
 }
 
 function processNoteUpdate(id, isApproved) {
-  $.getJSON("renderator/config/renderatorConfig.json").done(function(json) {
+  $.getJSON("renderatorUI/config/renderatorConfig.json").done(function(json) {
     var url = json.config.apiUrl + json.config.processNoteUpdateUrl;
 
     var data = {
@@ -8175,86 +8495,69 @@ $(document).ready(() => {
         .css("height", "50px");
   }, 1000);
 
-  setTimeout(() => {
-    if (!isMobile) {
-      $("#start").bind("click", function() {
-        func_recording_start();
-      });
-
-      $("#chat").bind("click", function() {
-        chat();
-      });
-
-      $("#snap").bind("click", function() {
-        screenshot();
-      });
-    } else {
-      // let startTime, endTime, longpress;
-
-      // document.getElementById("snap").addEventListener('click', function () {
-
-      //   if(longpress){
-
-      //     console.log("long pressed!");
-
-      //     $('#start').trigger('click');
-
-      //   }else{
-
-      //     screenshot();
-
-      //   }
-
-      // });
-
-      //
-
-      // document.getElementById("snap").addEventListener('mousedown', function () {
-
-      //   startTime = new Date().getTime();
-
-      // });
-
-      //
-
-      // document.getElementById("snap").addEventListener('mouseup', function () {
-
-      //   endTime = new Date().getTime();
-
-      //   longpress = (endTime - startTime > 1200) ? true : false;
-
-      //
-
-      // });
-
-      $("#snap").bind("click", function() {
-        if (!mobile_recording_process) screenshot();
-        else {
-          func_pause_play_recorder();
-        }
-      });
-
-      $("#snap").bind("long-press", function(e) {
-        e.preventDefault();
-
-        console.log("long button clicked");
-
-        mobile_recording_process = true;
-
-        func_recording_start();
-
-        $("#play-animation")
-          .removeClass("btn-action-stop")
-          .addClass("btn-action-play");
-      });
-
-      //   showToast('Double tap to leave a question',3900);
-    }
-
-    // chat();
-  }, 3000);
-
   if (!isMobile) {
     $("#brandLogo").addClass("hidden");
   }
 });
+
+
+function bindingDataForSnapToolbars() {
+  if (!isMobile) {
+    $("#start").bind("click", function () {
+      func_recording_start();
+    });
+
+    $("#chat").bind("click", function () {
+      chat();
+    });
+
+    $("#snap").bind("click", function () {
+      showSnapModes();
+    });
+
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+
+  } else {
+
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+
+    $("#snap").bind("click", function () {
+      if (!mobile_recording_process) showSnapModes();
+      else {
+        func_pause_play_recorder();
+      }
+    });
+
+    $("#snap").bind("long-press", function (e) {
+      e.preventDefault();
+
+      console.log("long button clicked");
+
+      mobile_recording_process = true;
+
+      func_recording_start();
+
+      $("#play-animation")
+        .removeClass("btn-action-stop")
+        .addClass("btn-action-play");
+    });
+
+  }
+}
+
+
+function bindDataForTakeSnapShotButton() {
+  if (!isMobile) {
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+  } else {
+    $("#screenShotButton").bind("click", function () {
+      takeScreenshot();
+    });
+  }
+}

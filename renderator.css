@@ -171,7 +171,7 @@ div {
 .screenshot-footer {
   /* padding:2%; */
   display: none;
-  /*position: absolute;*/
+  position: absolute;
   width: 100%;
   padding: 0.5% 0% 1% 0%;
   background-color: #fafaf4;
@@ -333,7 +333,6 @@ div {
 }
 
 .bg-overlay {
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -434,6 +433,8 @@ textarea {
 }
 #rederatorEditorContainer {
   cursor: pointer;
+  border: #FA4616 solid 5px;
+  outline: 10000px solid rgba(0,0,0,0.5)
 }
 
 #askTextInput img {
@@ -1793,4 +1794,202 @@ button#btnSend:disabled {
 .btn-inner-action {
   -webkit-transition: all 1s; /* Safari 4.0 - 8.0 */
   transition: all 1s;
+}
+
+
+#snapSettings{
+  height: 100%;
+  width: 150px;
+  position: absolute;
+  pointer-events: auto !important;
+  right: 0px;
+  padding-right: 10px;
+  padding-left: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.desktop-darker-background{
+  background-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.8));
+}
+
+.mobile-darker-background{
+  background-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.4));
+}
+
+.no-border{
+  border: none !important;
+}
+
+#snapSettings .snapMode .inactive{
+  opacity: 0.5;
+}
+
+#snapSettings .snapMode{
+  display: flex;
+  justify-content: center;
+  color: #FA4616;
+}
+
+#snapSettings .snapMode .box{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  border: #FA4616 solid 2px;
+  margin-top: 30px; 
+  font-size: 23px;
+}
+
+#snapSettings .snapMode .active{
+  border: #FA4616 solid 4px;
+  font-weight: 900;
+}
+
+#snapSettings .snapMode .cancel{
+  font-size: 2em;
+  transform:rotate(45deg);
+}
+
+
+#snapSettings .snapMode .full-screen{
+  width: 3.5em;
+  height: 2.2em;
+  border-radius: 9px;
+}
+
+#snapSettings .snapMode .landscape{
+  width: 3.5em;
+  height: 2.2em;
+  border-radius: 9px;
+}
+
+#snapSettings .snapMode .square{
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 9px;
+}
+
+ #snapSettings .snapMode .portrait{
+  height: 3.5em;
+  width: 2.2em;
+  border-radius: 9px;
+ }
+
+ #snapLandingView .plus-icon-group{
+  display: flex;
+  position: absolute;
+  justify-items: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+
+ }
+
+ #snapLandingView .plus-icon-group .plus-icon{
+  position: absolute;
+  font-size: 4em;
+}
+ 
+ .plus-top-left{
+    top: 20%;
+   left: 20%;
+ }
+
+
+ .plus-top-right{
+  top: 20%;
+  right: 20%;
+}
+
+.plus-bottom-left{
+  bottom: 20%;
+  left: 20%;
+}
+
+.plus-bottom-right{
+  bottom: 20%;
+  right: 20%;
+}
+
+.plus-center{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-size: 13em !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+}
+
+.primary-plus{
+  background: #FA4616;
+  height: 50px;
+  position: relative;
+  width: 10px;
+}
+
+.primary-plus:after {
+  background: #FA4616;
+  content: "";
+  height: 10px;
+  left: -20px;
+  position: absolute;
+  top: 20px;
+  width: 50px;
+}
+
+.secondary-plus {
+  background: #FA4616;
+  height: 40px;
+  position: relative;
+  width: 2px;
+}
+.secondary-plus:after {
+  background: #FA4616;
+  content: "";
+  height: 2px;
+  left: -19px;
+  position: absolute;
+  top: 19px;
+  width: 41px;
+}
+
+
+#snapLandingView .snap-container{
+   display: flex;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+   
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    padding-bottom: 30px;
+}
+
+
+.snap-trash-icon{
+  position: absolute;
+  width: 6em;
+  padding: 11px;
+  top: 0%;
+  right: 0px;
+  z-index: 9999;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.no-pointer-events{
+  pointer-events: none
+}
+
+#screenShotButton{
+  pointer-events: auto !important;
 }
